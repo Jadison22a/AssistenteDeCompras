@@ -1,6 +1,6 @@
 # AssistenteDeCompras
 
- Atualmente trabalho em uma empresa de compra de peças automotivos.
+ Atualmente trabalho em uma empresa de compra de peças automotivas.
 
  Criei um assistente de compra para auxiliar em minhas tarefa
 
