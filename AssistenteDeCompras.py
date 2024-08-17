@@ -27,6 +27,15 @@ botoes_cotacoes = []
 checkboxGlobal = []
 botao_deletarCotacao = []
 
+caminho_do_arquivo_graf1_linux = r'/home/jadilson/PycharmProjects/pythonProject/AssistenteDeCompras/graf1.html'
+caminho_do_arquivo_graf1_windows = r'C:\Users\claudionisio.bonetto\PycharmProjects\pythonProject\python arquivos/AssistenteDeCompras/graf1.html'
+
+caminho_do_arquivo_graf2_linux = r'/home/jadilson/PycharmProjects/pythonProject/AssistenteDeCompras/graf2.html'
+caminho_do_arquivo_graf2_windows = r'C:\Users\claudionisio.bonetto\PycharmProjects\pythonProject\python arquivos/AssistenteDeCompras/graf2.html'
+
+caminho_do_arquivo_graf3_linux = r'/home/jadilson/PycharmProjects/pythonProject/AssistenteDeCompras/graf3.html'
+caminho_do_arquivo_graf3_windows = r'C:\Users\claudionisio.bonetto\PycharmProjects\pythonProject\python arquivos/AssistenteDeCompras/graf3.html'
+
 # ==========================================configurações Banco de dados================================================
 if platform.system() == "Windows":
     # Configurações de conexão
@@ -460,8 +469,7 @@ def funcao_botao2():
                     operacional. (lenbrando que ainda é necessario a alteração do local do arquivo .html)
                 """
 
-        caminho_do_arquivo_graf1_linux = r'/home/jadilson/PycharmProjects/pythonProject/AssistenteDeCompras/graf1.html'
-        caminho_do_arquivo_graf1_windows = r'C:\Users\claudionisio.bonetto\PycharmProjects\pythonProject\python arquivos/AssistenteDeCompras/graf1.html'
+
 
         if platform.system() == "Windows":
             if os.path.exists(caminho_do_arquivo_graf1_windows):
@@ -502,8 +510,7 @@ def funcao_botao2():
             operacional. (lenbrando que ainda é necessario a alteração do local do arquivo .html)
         """
 
-        caminho_do_arquivo_graf2_linux = r'/home/jadilson/PycharmProjects/pythonProject/AssistenteDeCompras/graf2.html'
-        caminho_do_arquivo_graf2_windows = r'C:\Users\claudionisio.bonetto\PycharmProjects\pythonProject\python arquivos/AssistenteDeCompras/graf2.html'
+
 
         if platform.system() == "Windows":
             if os.path.exists(caminho_do_arquivo_graf2_windows):
@@ -558,8 +565,7 @@ def funcao_botao2():
             operacional. (lenbrando que ainda é necessario a alteração do local do arquivo .html)
         """
 
-        caminho_do_arquivo_graf3_linux = r'/home/jadilson/PycharmProjects/pythonProject/AssistenteDeCompras/graf3.html'
-        caminho_do_arquivo_graf3_windows = r'C:\Users\claudionisio.bonetto\PycharmProjects\pythonProject\python arquivos/AssistenteDeCompras/graf3.html'
+
 
 
         if platform.system() == "Windows":
