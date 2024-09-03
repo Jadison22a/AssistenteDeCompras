@@ -1,0 +1,7 @@
+Bibliotecas
+
+pip instal customtkinter
+pip install mysql-connector-python
+pip install plotly
+pip install pandas
+pip install Pillow
