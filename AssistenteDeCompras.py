@@ -9,6 +9,7 @@ import os
 import subprocess   #exclusivo para o linux pois o mesmo não consegue remover arquivos com a biblioteca 'os'
 import platform
 
+
 # ============================================configuraçoes da janela CTK===============================================
 # Configurações da janela
 janela = ctk.CTk()
@@ -203,7 +204,7 @@ def abrir_top_level(row, index, cotacao_id=None):
 
     textbox2.insert(0.0,
                     "RETIRA - FILIAL " + f"{row['BASE']} - \n" + f"{row['VEICULO']} - \n" + f"{row['NATUREZA']}\n" +
-                    "COMPRADOR JADILSON\n" + f"FATURAR NO CNPJ: {var_empresa}")
+                    "COMPRADOR JADILSON\n" + f"FATURAR NO CNPJ: {var_empresa}" + f" - COTAÇÃO Nº {row['COTACAO']}")
 
     def salvar_dados():
         try:
@@ -223,12 +224,13 @@ def abrir_top_level(row, index, cotacao_id=None):
                 else:
                     query = """
                         INSERT INTO cotacoes (COTACAO, DATA, VEICULO, SITUACAO, FORNECEDOR, NUMERO_UNICO, NUMERO_PEDIDO,
-                         NATUREZA, EMPRESA, BASE, OBSERVACAO)
-                        VALUES (%s, %s, %s, 'FECHADO', %s, %s, %s, %s, %s, %s, %s)
+                         NATUREZA, EMPRESA, BASE, OBSERVACAO, mes)
+                        VALUES (%s, %s, %s, 'FECHADO', %s, %s, %s, %s, %s, %s, %s, %s)
                     """
                     data = (
                         row['COTACAO'], row['DATA'], row['VEICULO'], fornecedor_entry.get(), unico_entry.get(),
-                        pedido_entry.get(), row['NATUREZA'], row['EMPRESA'], row['BASE'], observacao_entry.get()
+                        pedido_entry.get(), row['NATUREZA'], row['EMPRESA'], row['BASE'], observacao_entry.get(),
+                        row['mes']
                     )
                 cursor.execute(query, data)
                 conn.commit()
@@ -258,13 +260,13 @@ def clonar_cotacoes(num_fornecedores, row):
             for i in range(num_fornecedores):
                 query = """
                     INSERT INTO cotacoes (COTACAO, DATA, VEICULO, SITUACAO, FORNECEDOR, NUMERO_UNICO, NUMERO_PEDIDO,
-                     NATUREZA, EMPRESA, BASE, OBSERVACAO)
-                    VALUES (%s, %s, %s, 'ABERTO', %s, %s, %s, %s, %s, %s, %s)
+                     NATUREZA, EMPRESA, BASE, OBSERVACAO, mes)
+                    VALUES (%s, %s, %s, 'ABERTO', %s, %s, %s, %s, %s, %s, %s, %s)
                 """
 
                 data = (
                     row['COTACAO'], row['DATA'], row['VEICULO'], None, None, None, row['NATUREZA'], row['EMPRESA'],
-                    row['BASE'], None
+                    row['BASE'], None, row['mes']
                 )
                 cursor.execute(query, data)
                 cotacao_ids.append(cursor.lastrowid)
@@ -384,8 +386,18 @@ def funcao_botao2():
                        width= 500,
                        height= 400)
 
-    # Cria o grafico de quantidade por fornecedores
-    fig2 = px.histogram(dados, x="FORNECEDOR", template="plotly_dark", width=1000, height=350)
+    # Supondo que 'dados' seja o seu DataFrame
+    # Contar a quantidade de ocorrências por fornecedor
+    fornecedores_count = dados['FORNECEDOR'].value_counts()
+
+    # Filtrar fornecedores com count > 1
+    fornecedores_filtrados = fornecedores_count[fornecedores_count > 1].index
+
+    # Filtrar o DataFrame original
+    dados_filtrados = dados[dados['FORNECEDOR'].isin(fornecedores_filtrados)]
+
+    # Cria o gráfico de quantidade por fornecedores
+    fig2 = px.histogram(dados_filtrados, x="FORNECEDOR", template="plotly_dark", width=1000, height=350)
 
     # Cria o grafico EM PIZZA
     dados1 = dados[dados["NATUREZA"] == "ESTOQUE"]
@@ -728,7 +740,7 @@ Texto_Tabview_Motos.place(x= 50, y= 150)
 
 #>>>>>>>>>>>>Tabview Conssecionárias
 Texto_Tabview_Conssecionaria = ctk.CTkLabel(Tabview.tab("Conssecionária"),
-                                                 text="Esses são os fonecedores de funilaria:",
+                                                 text="Conssecionárias, peças originais:",
                                                  font=("Arial", 20))
 Texto_Tabview_Conssecionaria.place(x= 50, y= 50)
 
@@ -781,6 +793,7 @@ def funcao_botao3():
         data_atual = datetime.now()
         # Formatar a data como string
         data_formatada = data_atual.strftime("%Y-%m-%d")
+        data_mes = data_atual.strftime("%m")
 
         try:
             # Conectar ao banco de dados
@@ -806,18 +819,19 @@ def funcao_botao3():
                     'NATUREZA': natureza_str,
                     'EMPRESA': empresa_str,
                     'BASE': base_entry_str,
-                    'OBSERVACAO': None
+                    'OBSERVACAO': None,
+                    'mes': data_mes
                 }
 
                 query = """
                                     INSERT INTO cotacoes (COTACAO, DATA, VEICULO, SITUACAO, FORNECEDOR, NUMERO_UNICO, NUMERO_PEDIDO,
-                                     NATUREZA, EMPRESA, BASE, OBSERVACAO)
-                                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                                     NATUREZA, EMPRESA, BASE, OBSERVACAO, mes)
+                                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                                 """
                 data = (
                     new_data['COTACAO'], new_data['DATA'], new_data['VEICULO'], new_data['SITUACAO'],
                     new_data['FORNECEDOR'], new_data['NUMERO_UNICO'], new_data['NUMERO_PEDIDO'], new_data['NATUREZA'],
-                    new_data['EMPRESA'], new_data['BASE'], new_data['OBSERVACAO']
+                    new_data['EMPRESA'], new_data['BASE'], new_data['OBSERVACAO'], new_data['mes']
                 )
                 cursor.execute(query, data)
                 conn.commit()
@@ -840,7 +854,6 @@ def funcao_botao3():
             modelo.delete(0, tkinter.END)
             chassi.delete(0, tkinter.END)
             quant.delete(0, tkinter.END)
-            base_entry.delete(0, tkinter.END)
             for entry in vet:
                 entry.destroy()  # Destroi cada widget CTkEntry
             textbox.destroy()  # destrói a caixa de texto
@@ -848,6 +861,7 @@ def funcao_botao3():
             botao6.destroy()
             botao7.destroy()
             botao5.destroy()
+            botaolix.destroy()
             titulo3.destroy()
 
         def funcao_botao7():
@@ -926,8 +940,29 @@ def funcao_botao3():
     natureza_str = str(natureza.get())
     empresa_str = str(empresa.get())
 
-    botao5 = ctk.CTkButton(frame2, text="Pré-visualizar", width=210, command=funcao_botao5)
+    botao5 = ctk.CTkButton(frame2, text="Pré-visualizar",height= 30, width=200, command=funcao_botao5)
     botao5.place(x=575, y=125)
+
+    def funcao_botaolix():
+        # Limpar todos os campos de entrada
+        cotacao.delete(0, tkinter.END)
+        veiculo.delete(0, tkinter.END)
+        modelo.delete(0, tkinter.END)
+        chassi.delete(0, tkinter.END)
+        quant.delete(0, tkinter.END)
+        for entry in vet:
+            entry.destroy()  # Destroi cada widget CTkEntry
+        botao5.destroy()
+        botaolix.destroy()
+        titulo3.destroy()
+
+    imgLix_path = Image.open("iconLixeira.png")
+    image_resized = imgLix_path.resize((25, 25))  # Ajustando o tamanho da imagem
+    photo = ImageTk.PhotoImage(image_resized)  # Convertendo a imagem para o formato Tkinter
+
+    botaolix = ctk.CTkButton(frame2,text= "", image= photo,width= 30, height= 30, command=funcao_botaolix)
+    botaolix.place(x=785, y=125)
+
 
     titulo3 = ctk.CTkLabel(frame2, text="Insira os itens que deseja comprar", font=("Arial", 20),
                                      fg_color="#212121")
@@ -944,7 +979,7 @@ modelo = ctk.CTkEntry(frame2, placeholder_text="MODELO")
 modelo.place(x=100, y=180)
 chassi = ctk.CTkEntry(frame2, placeholder_text="CHASSI")
 chassi.place(x=100, y=220)
-base_entry = ctk.CTkEntry(frame2, placeholder_text="BASE")
+base_entry = ctk.CTkOptionMenu(frame2, values=["CAMPINAS", "MONGAGUA", "TAUBATE", "BARUERI", "BH","BELEM"])
 base_entry.place(x=100, y=260)
 natureza = ctk.CTkOptionMenu(frame2,
                                        values=["ESTOQUE", "OFICINA", "RESSARCIMENTO", "PEDIDO FAKE"], )
